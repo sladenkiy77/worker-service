@@ -15,14 +15,14 @@ func main() {
 	app := &cli.App{
 		Name:    constant.AppName,
 		Version: constant.Version,
-		Usage:   "MoM Boilerplate V2 — шаблон Go сервиса",
+		Usage:   "Worker management service",
 		Commands: []*cli.Command{
 			cmd.WebServer(),
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:  "no-json",
-				Usage: "Человеко-читаемый формат логов вместо JSON",
+				Usage: "Human-readable log format",
 			},
 		},
 	}
