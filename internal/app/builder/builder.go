@@ -11,6 +11,10 @@ import (
 	"syscall"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sladenkiy77/worker-service/internal/app/entity"
+	eorder "github.com/sladenkiy77/worker-service/internal/app/handler/event/order"
+	eprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/event"
+	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
 	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 
@@ -41,7 +45,7 @@ type Builder struct {
 	// Kafka-клиент (общий producer + фабрика consumer groups)
 	kafkaClient *broker.KafkaClient
 
-	// TODO: добавить зависимости по мере появления (repositories, services, handlers, monitors).
+	busOrderCreated broker.Bus[entity.EventOrderCreated]
 }
 
 // NewBuilder создаёт новый Builder и настраивает обработку сигналов OS.
@@ -121,6 +125,26 @@ func (b *Builder) BuildBrokerKafka() {
 			processor.WatchForShutdown(ctx, wg, util.CloserFunc(client.Close))
 		}))
 	})
+}
+
+func (b *Builder) BuildConsumerOrderCreated() {
+	b.exec(func(b *Builder) {
+		cfg := config.Root.Broker.Kafka
+
+		topic := cfg.ModelOrder.Created.Topic
+		group := broker.Coalesce(cfg.ModelOrder.Created.ConsumerGroup, cfg.ConsumerGroup)
+
+		bus, err := broker.NewBus[entity.EventOrderCreated](b.kafkaClient, codec.NewCodecJson[entity.EventOrderCreated](), topic, group)
+		if err != nil {
+			b.err = err
+			return
+		}
+
+		b.busOrderCreated = bus
+
+		handler := eorder.NewHandler()
+		b.processors = append(b.processors, eprocessor.NewOrderCreatedEventsCatcher(handler, bus))
+	}, b.kafkaClient)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
