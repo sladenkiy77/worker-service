@@ -18,6 +18,7 @@ func main() {
 		Usage:   "Worker management service",
 		Commands: []*cli.Command{
 			cmd.WebServer(),
+			cmd.SubscribeOrderCreated(),
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
