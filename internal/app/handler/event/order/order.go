@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
 	ehandler "github.com/sladenkiy77/worker-service/internal/app/handler/event"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"

@@ -7,7 +7,6 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/pkg/http/httph"
 )
 

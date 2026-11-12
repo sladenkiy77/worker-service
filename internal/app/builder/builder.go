@@ -11,21 +11,20 @@ import (
 	"syscall"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sladenkiy77/worker-service/internal/app/config"
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
 	eorder "github.com/sladenkiy77/worker-service/internal/app/handler/event/order"
-	eprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/event"
-	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
-	"github.com/urfave/cli/v2"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
-
-	"github.com/sladenkiy77/worker-service/internal/app/config"
 	"github.com/sladenkiy77/worker-service/internal/app/processor"
+	eprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/event"
 	rprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/http"
 	mmonitor "github.com/sladenkiy77/worker-service/internal/app/processor/monitor"
 	"github.com/sladenkiy77/worker-service/internal/app/util"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
+	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
 	"github.com/sladenkiy77/worker-service/internal/pkg/constant"
 	"github.com/sladenkiy77/worker-service/internal/pkg/http/httph"
+	"github.com/urfave/cli/v2"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )
 
 // Builder — структура для сборки зависимостей приложения.

@@ -8,6 +8,10 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sladenkiy77/worker-service/internal/app/config/section"
+	"github.com/sladenkiy77/worker-service/internal/app/processor"
+	"github.com/sladenkiy77/worker-service/internal/app/util"
+	"github.com/sladenkiy77/worker-service/internal/pkg/constant"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -18,11 +22,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
-
-	"github.com/sladenkiy77/worker-service/internal/app/config/section"
-	"github.com/sladenkiy77/worker-service/internal/app/processor"
-	"github.com/sladenkiy77/worker-service/internal/app/util"
-	"github.com/sladenkiy77/worker-service/internal/pkg/constant"
 )
 
 const (

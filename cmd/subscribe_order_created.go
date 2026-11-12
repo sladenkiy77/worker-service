@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"github.com/urfave/cli/v2"
-
 	"github.com/sladenkiy77/worker-service/internal/app/builder"
+	"github.com/urfave/cli/v2"
 )
 
 // SubscribeOrderCreated возвращает CLI команду для запуска consumer'а топика order.created.

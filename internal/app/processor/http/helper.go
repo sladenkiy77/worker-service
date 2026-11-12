@@ -5,7 +5,6 @@ import (
 	"unsafe"
 
 	"github.com/gorilla/mux"
-
 	"github.com/sladenkiy77/worker-service/internal/pkg/http/httph"
 )
 
