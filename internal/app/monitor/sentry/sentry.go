@@ -8,7 +8,6 @@ import (
 	sentryzerolog "github.com/getsentry/sentry-go/zerolog"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/config/section"
 )
 

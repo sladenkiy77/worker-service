@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/config/section"
 	"github.com/sladenkiy77/worker-service/internal/app/processor"
 	"github.com/sladenkiy77/worker-service/internal/app/util"

@@ -7,7 +7,6 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/config/section"
 	msentry "github.com/sladenkiy77/worker-service/internal/app/monitor/sentry"
 	mtracelog "github.com/sladenkiy77/worker-service/internal/app/monitor/tracelog"
