@@ -17,7 +17,7 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, cfg section.RepositoryRedis) (*Client, error) {
-	log.Info().Str("address", cfg.Address).Int("db_num", cfg.DB).Msg("started connection to redis db")
+	log.Info().Str("address", cfg.Address).Int("db_num", cfg.DB).Msg("initializing connection to redis")
 	rdb := redis.NewClient(&redis.Options{Addr: cfg.Address, Password: cfg.Password, DB: cfg.DB})
 
 	if err := redisotel.InstrumentTracing(rdb); err != nil {

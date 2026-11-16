@@ -18,6 +18,7 @@ import (
 	eprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/event"
 	rprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/http"
 	mmonitor "github.com/sladenkiy77/worker-service/internal/app/processor/monitor"
+	rcredis "github.com/sladenkiy77/worker-service/internal/app/repository/conn/redis"
 	"github.com/sladenkiy77/worker-service/internal/app/util"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
@@ -45,6 +46,9 @@ type Builder struct {
 	kafkaClient *broker.KafkaClient
 
 	busOrderCreated broker.Bus[entity.EventOrderCreated]
+
+	// DB
+	connRedis *rcredis.Client
 }
 
 // NewBuilder создаёт новый Builder и настраивает обработку сигналов OS.
@@ -144,6 +148,21 @@ func (b *Builder) BuildConsumerOrderCreated() {
 		handler := eorder.NewHandler()
 		b.processors = append(b.processors, eprocessor.NewOrderCreatedEventsCatcher(handler, bus))
 	}, b.kafkaClient)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// REPOSITORIES /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+func (b *Builder) BuildConnRedis() {
+	b.exec(func(b *Builder) {
+		conn, err := rcredis.NewClient(b.ctx, config.Root.Repository.Redis)
+		if err != nil {
+			b.err = fmt.Errorf("init redis conn: %w", err)
+			return
+		}
+		b.connRedis = conn
+	})
 }
 
 ////////////////////////////////////////////////////////////////////////////////
