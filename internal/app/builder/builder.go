@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sladenkiy77/worker-service/internal/app/client/fixer"
 	"github.com/sladenkiy77/worker-service/internal/app/config"
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
 	eorder "github.com/sladenkiy77/worker-service/internal/app/handler/event/order"
@@ -18,7 +19,11 @@ import (
 	eprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/event"
 	rprocessor "github.com/sladenkiy77/worker-service/internal/app/processor/http"
 	mmonitor "github.com/sladenkiy77/worker-service/internal/app/processor/monitor"
+	"github.com/sladenkiy77/worker-service/internal/app/repository"
 	rcredis "github.com/sladenkiy77/worker-service/internal/app/repository/conn/redis"
+	rcurrency "github.com/sladenkiy77/worker-service/internal/app/repository/currency"
+	"github.com/sladenkiy77/worker-service/internal/app/service"
+	scurrency "github.com/sladenkiy77/worker-service/internal/app/service/currency"
 	"github.com/sladenkiy77/worker-service/internal/app/util"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
@@ -49,6 +54,15 @@ type Builder struct {
 
 	// DB
 	connRedis *rcredis.Client
+
+	// Внешние клиенты
+	clientFixer *fixer.Client
+
+	// Репозитории
+	repoCurrencyRate repository.CurrencyRate
+
+	// Сервисы
+	currencyService service.Currency
 }
 
 // NewBuilder создаёт новый Builder и настраивает обработку сигналов OS.
@@ -102,6 +116,16 @@ func (b *Builder) buildConfig(args config.LoadArgs, injectors []func(c *config.C
 ////////////////////////////////////////////////////////////////////////////////
 
 // TODO: добавить методы BuildHandlerXxx по мере появления handlers.
+
+////////////////////////////////////////////////////////////////////////////////
+///// CLIENTS //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+func (b *Builder) BuildClientFixer() {
+	b.exec(func(b *Builder) {
+		b.clientFixer = fixer.NewClient(config.Root.Client.Fixer)
+	})
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///// BROKER ///////////////////////////////////////////////////////////////////
@@ -163,6 +187,22 @@ func (b *Builder) BuildConnRedis() {
 		}
 		b.connRedis = conn
 	})
+}
+
+func (b *Builder) BuildRepoCurrencyRate() {
+	b.exec(func(b *Builder) {
+		b.repoCurrencyRate = rcurrency.NewRepoFromRedis(b.connRedis.Client, config.Root.Client.Fixer.CacheTTL)
+	}, b.connRedis)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// SERVICES /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+func (b *Builder) BuildServiceCurrency() {
+	b.exec(func(b *Builder) {
+		b.currencyService = scurrency.NewService(b.clientFixer, b.repoCurrencyRate)
+	}, b.clientFixer, b.repoCurrencyRate)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
