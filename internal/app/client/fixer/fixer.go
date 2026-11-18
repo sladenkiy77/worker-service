@@ -62,7 +62,7 @@ func (c *Client) GetRates(ctx context.Context, base string) (map[string]float64,
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", entity.ErrFixerUnavailable, err)
+		return nil, fmt.Errorf("%w: %s", entity.ErrFixerUnavailable, err.Error())
 	}
 	defer func() {
 		_ = resp.Body.Close()
