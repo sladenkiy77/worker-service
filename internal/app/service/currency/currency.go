@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
 	"github.com/sladenkiy77/worker-service/internal/app/repository"
 	"github.com/sladenkiy77/worker-service/internal/app/service"

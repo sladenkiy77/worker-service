@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-
 	"github.com/sladenkiy77/worker-service/internal/app/config/section"
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 const requestTimeout = 10 * time.Second

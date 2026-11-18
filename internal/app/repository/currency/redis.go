@@ -9,7 +9,6 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
-
 	"github.com/sladenkiy77/worker-service/internal/app/entity"
 	"github.com/sladenkiy77/worker-service/internal/app/repository"
 )
