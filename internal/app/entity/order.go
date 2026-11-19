@@ -3,7 +3,7 @@ package entity
 import (
 	"github.com/gofrs/uuid"
 	"github.com/rs/zerolog"
-	
+
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
 )
 
