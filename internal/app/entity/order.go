@@ -1,6 +1,11 @@
 package entity
 
-import "github.com/rs/zerolog"
+import (
+	"github.com/gofrs/uuid"
+	"github.com/rs/zerolog"
+	
+	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
+)
 
 ////////////////////////////////////////////////////////////////////////////////
 ///// EVENT MODEL //////////////////////////////////////////////////////////////
@@ -39,4 +44,26 @@ func (e EventOrderDeliveryCalculated) MarshalZerologObject(ev *zerolog.Event) {
 	ev.Str("order_guid", e.OrderGUID).
 		Int64("delivery_price", e.DeliveryPrice).
 		Str("currency", e.Currency)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///// EVENT AUXILIARIES ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+const (
+	// BrokerHeaderKeyOrderEventType - логический тип событий (роутинг/фильтрация без декода payload)
+	BrokerHeaderKeyOrderEventType = "type"
+	// BrokerHeaderKeyOrderEventID - уникальный ID сообщения для коррелияции логов
+	//(отличается от Kafka key, который отвечает за партиционирование).
+	BrokerHeaderKeyOrderEventID = "event-id"
+
+	BrokerHeaderValueOrderDeliveryCalculated = "order.delivery.calculated"
+)
+
+func BrokerHeaderOrderDeliveryCalculatedType() broker.Header {
+	return broker.Header{Key: BrokerHeaderKeyOrderEventType, Value: BrokerHeaderValueOrderDeliveryCalculated}
+}
+
+func BrokerHeaderOrderDeliveryCalculatedEventID() broker.Header {
+	return broker.Header{Key: BrokerHeaderKeyOrderEventID, Value: uuid.Must(uuid.NewV4()).String()}
 }
