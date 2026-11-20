@@ -24,6 +24,7 @@ import (
 	rcurrency "github.com/sladenkiy77/worker-service/internal/app/repository/currency"
 	"github.com/sladenkiy77/worker-service/internal/app/service"
 	scurrency "github.com/sladenkiy77/worker-service/internal/app/service/currency"
+	sdelivery "github.com/sladenkiy77/worker-service/internal/app/service/delivery"
 	"github.com/sladenkiy77/worker-service/internal/app/util"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker"
 	"github.com/sladenkiy77/worker-service/internal/pkg/broker/codec"
@@ -50,7 +51,8 @@ type Builder struct {
 	// Kafka-клиент (общий producer + фабрика consumer groups)
 	kafkaClient *broker.KafkaClient
 
-	busOrderCreated broker.Bus[entity.EventOrderCreated]
+	busOrderCreated            broker.Bus[entity.EventOrderCreated]
+	busOrderDeliveryCalculated broker.Bus[entity.EventOrderDeliveryCalculated]
 
 	// DB
 	connRedis *rcredis.Client
@@ -63,6 +65,7 @@ type Builder struct {
 
 	// Сервисы
 	currencyService service.Currency
+	deliveryService service.Delivery
 }
 
 // NewBuilder создаёт новый Builder и настраивает обработку сигналов OS.
@@ -174,6 +177,25 @@ func (b *Builder) BuildConsumerOrderCreated() {
 	}, b.kafkaClient)
 }
 
+func (b *Builder) BuildBusOrderDeliveryCalculated() {
+	b.exec(func(b *Builder) {
+		cfg := config.Root.Broker.Kafka
+
+		bus, err := broker.NewBus[entity.EventOrderDeliveryCalculated](
+			b.kafkaClient,
+			codec.NewCodecJson[entity.EventOrderDeliveryCalculated](),
+			cfg.ModelOrder.DeliveryCalculated.Topic,
+			cfg.ConsumerGroup,
+		)
+		if err != nil {
+			b.err = err
+			return
+		}
+
+		b.busOrderDeliveryCalculated = bus
+	}, b.kafkaClient)
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ///// REPOSITORIES /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -203,6 +225,12 @@ func (b *Builder) BuildServiceCurrency() {
 	b.exec(func(b *Builder) {
 		b.currencyService = scurrency.NewService(b.clientFixer, b.repoCurrencyRate)
 	}, b.clientFixer, b.repoCurrencyRate)
+}
+
+func (b *Builder) BuildServiceDelivery() {
+	b.exec(func(b *Builder) {
+		b.deliveryService = sdelivery.NewService(b.currencyService)
+	}, b.currencyService)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
