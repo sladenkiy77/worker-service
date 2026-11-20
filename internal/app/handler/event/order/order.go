@@ -39,7 +39,7 @@ func (h *handler) CallbackOrderCreated(ctx context.Context, ev *entity.EventOrde
 	if err != nil {
 		if errors.Is(err, entity.ErrFixerCurrencyNotFound) {
 			return broker.NotCriticalError(
-				fmt.Errorf("order.delivery.calculated: calculate delivery price: %w", err),
+				fmt.Errorf("order.delivery.calculated: unknown currency: %w", err),
 			)
 		}
 		return fmt.Errorf("order.delivery.calculated: calculate delivery price: %w", err)
