@@ -172,9 +172,9 @@ func (b *Builder) BuildConsumerOrderCreated() {
 
 		b.busOrderCreated = bus
 
-		handler := eorder.NewHandler()
+		handler := eorder.NewHandler(b.deliveryService, b.busOrderDeliveryCalculated)
 		b.processors = append(b.processors, eprocessor.NewOrderCreatedEventsCatcher(handler, bus))
-	}, b.kafkaClient)
+	}, b.kafkaClient, b.deliveryService, b.busOrderDeliveryCalculated)
 }
 
 func (b *Builder) BuildBusOrderDeliveryCalculated() {
